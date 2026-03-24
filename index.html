@@ -1,13 +1,280 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nippon Colors - Traditional Japanese Colors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        jp: ['Noto Sans JP', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-stone-50 text-stone-900 min-h-screen font-sans antialiased" id="body">
 
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-stone-200 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center py-4 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg">
+                        <span class="text-white font-serif text-xl font-bold">日</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-stone-800">NIPPON COLORS</h1>
+                        <nav class="flex gap-4 mt-1 text-sm font-medium text-stone-500">
+                            <button id="view-colors-btn" class="text-stone-900 border-b-2 border-stone-900 pb-0.5 transition-colors duration-300">Colors</button>
+                            <button id="view-schemes-btn" class="hover:text-stone-800 border-b-2 border-transparent pb-0.5 transition-colors duration-300">Schemes</button>
+                            <button id="view-dataviz-btn" class="hover:text-stone-800 border-b-2 border-transparent pb-0.5 transition-colors duration-300">DataViz</button>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <button id="random-palette-btn" class="p-2 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full transition-colors group cursor-pointer" title="Random Palette">
+                        <i data-lucide="dices" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
+                    </button>
+                    <div class="relative w-full sm:w-64">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"></i>
+                        <input 
+                            type="text" 
+                            id="search-input"
+                            placeholder="ค้นหาสี (ภาษาไทย, Romaji, Hex)..."
+                            class="w-full pl-9 pr-4 py-2 bg-stone-100 border-transparent rounded-full text-sm focus:bg-white focus:border-red-300 focus:ring-2 focus:ring-red-200 transition-all outline-none"
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div id="colors-view">
+            <!-- Categories -->
+            <div class="flex flex-wrap gap-2 mb-8" id="category-tabs">
+                <!-- Rendered by JS -->
+            </div>
+
+            <!-- Color Grid -->
+            <div id="color-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+
+        <!-- Schemes View -->
+        <div id="schemes-view" class="hidden flex flex-col gap-12">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- DataViz View -->
+        <div id="dataviz-view" class="hidden">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+                <div>
+                    <h2 class="text-3xl font-serif text-stone-800 font-bold mb-2">Data Visualization Schemes</h2>
+                    <p class="text-sm uppercase tracking-widest text-stone-500">Color Brewer style palettes for data analysis</p>
+                </div>
+                <div class="flex gap-2" id="dataviz-filter">
+                    <button data-type="All" class="px-4 py-1.5 rounded-full text-xs uppercase tracking-widest font-bold transition-all border bg-stone-800 text-white border-stone-800">All</button>
+                    <button data-type="Sequential" class="px-4 py-1.5 rounded-full text-xs uppercase tracking-widest font-bold transition-all border bg-white text-stone-600 border-stone-200 hover:border-stone-400">Sequential</button>
+                    <button data-type="Diverging" class="px-4 py-1.5 rounded-full text-xs uppercase tracking-widest font-bold transition-all border bg-white text-stone-600 border-stone-200 hover:border-stone-400">Diverging</button>
+                    <button data-type="Qualitative" class="px-4 py-1.5 rounded-full text-xs uppercase tracking-widest font-bold transition-all border bg-white text-stone-600 border-stone-200 hover:border-stone-400">Qualitative</button>
+                </div>
+            </div>
+            <div id="dataviz-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-20 text-stone-500">
+            <i data-lucide="dices" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+            <p>ไม่พบสีที่ค้นหา</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 py-8 border-t border-stone-200 bg-white">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-stone-500">
+            <p>Traditional Japanese Colors. Simple Static Web Version.</p>
+        </div>
+    </footer>
+
+    <!-- Random Palette Modal -->
+    <div id="random-palette-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" id="random-palette-backdrop"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col transition-transform duration-300 translate-y-8 scale-95" id="random-palette-content">
+            
+            <div class="p-6 border-b border-stone-100 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600">
+                        <i data-lucide="dices" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-stone-800">Random Palette Generator</h2>
+                        <p class="text-xs text-stone-500 uppercase tracking-widest mt-1">Discover unexpected combinations</p>
+                    </div>
+                </div>
+                <button id="close-random-modal" class="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-50 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 flex-1 flex flex-col overflow-y-auto">
+                <div class="flex justify-center gap-4 mb-8">
+                    <button id="btn-random-analogous" class="px-6 py-3 bg-stone-800 hover:bg-black text-white rounded-full text-sm font-medium transition-colors flex items-center gap-2 shadow-md">
+                        <i data-lucide="palette" class="w-4 h-4"></i>
+                        สุ่มสีโทนเดียวกัน (Same Tone)
+                    </button>
+                    <button id="btn-random-chaos" class="px-6 py-3 bg-white hover:bg-stone-50 text-stone-800 border border-stone-200 rounded-full text-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
+                        <i data-lucide="shuffle" class="w-4 h-4"></i>
+                        สุ่มมั่วๆ เลย (Total Random)
+                    </button>
+                </div>
+                
+                <div id="random-palette-strip" class="flex-1 w-full min-h-[300px] flex rounded-2xl overflow-hidden shadow-inner border border-stone-100">
+                    <!-- Random colors rendered here -->
+                    <div class="flex-1 flex items-center justify-center text-stone-400">
+                        <p class="text-sm font-medium tracking-wide">Click a button above to generate a palette</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 md:p-12 overflow-hidden">
+        <div id="detail-backdrop" class="absolute inset-0 bg-stone-900/40 backdrop-blur-xl transition-opacity duration-700 opacity-0"></div>
+        <div id="detail-card" class="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row transform scale-95 opacity-0 transition-all duration-500 max-h-[90vh]">
+            <!-- Color Side -->
+            <div id="detail-color-bg" class="w-full md:w-2/5 h-48 md:h-auto relative flex flex-col justify-end p-8 md:p-12 text-white overflow-hidden">
+                <div class="relative z-10 animate-fade-in-up">
+                    <h2 id="detail-kanji" class="font-jp font-bold text-5xl md:text-7xl mb-2 drop-shadow-lg leading-tight"></h2>
+                    <p id="detail-romaji" class="text-lg md:text-2xl uppercase tracking-[0.2em] opacity-80 drop-shadow-md font-light"></p>
+                </div>
+                <!-- Interactive Contrast Bubbles -->
+                <div class="absolute top-8 left-8 flex flex-col gap-3 z-10">
+                    <div id="contrast-white" class="p-3 bg-white rounded-2xl shadow-xl flex items-center gap-3 transform -translate-x-12 opacity-0 transition-all duration-700 delay-300">
+                        <div class="w-8 h-8 rounded-full border border-stone-100 flex items-center justify-center text-stone-900 font-bold text-xs">Aa</div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-stone-400 font-bold uppercase tracking-tighter">White BG</span>
+                            <span id="ratio-white" class="text-sm font-mono text-stone-900 leading-none font-bold"></span>
+                        </div>
+                        <div id="pass-white" class="px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white shadow-sm shadow-emerald-200">PASS</div>
+                    </div>
+                    <div id="contrast-black" class="p-3 bg-stone-900 rounded-2xl shadow-xl flex items-center gap-3 transform -translate-x-12 opacity-0 transition-all duration-700 delay-500">
+                        <div class="w-8 h-8 rounded-full border border-stone-800 flex items-center justify-center text-white font-bold text-xs">Aa</div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-stone-500 font-bold uppercase tracking-tighter">Black BG</span>
+                            <span id="ratio-black" class="text-sm font-mono text-white leading-none font-bold"></span>
+                        </div>
+                        <div id="pass-black" class="px-2 py-1 rounded-md text-[9px] font-black uppercase tracking-widest bg-stone-700 text-white">FAIL</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Side -->
+            <div class="flex-1 p-8 md:p-12 bg-white flex flex-col gap-10 overflow-y-auto">
+                <div class="flex justify-between items-start">
+                    <div class="flex flex-col items-start gap-2">
+                        <span id="detail-hex" class="text-3xl md:text-4xl font-mono font-black text-stone-900 tracking-tighter uppercase select-all"></span>
+                        <div class="flex gap-2">
+                             <div class="px-2 py-1 bg-stone-100 rounded text-[10px] font-mono text-stone-500 font-bold uppercase tracking-wider" id="detail-rgb"></div>
+                             <div class="px-2 py-1 bg-stone-100 rounded text-[10px] font-mono text-stone-500 font-bold uppercase tracking-wider" id="detail-hsl"></div>
+                        </div>
+                    </div>
+                    <button id="close-detail" class="w-12 h-12 rounded-full hover:bg-stone-100 transition-colors flex items-center justify-center text-stone-400 hover:text-stone-900">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- Harmonies -->
+                <div class="space-y-6">
+                    <h3 class="text-xs font-black text-stone-300 uppercase tracking-[0.3em]">Traditional Harmonies</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Harmony Card: Complementary -->
+                        <div class="p-4 rounded-3xl bg-stone-50 border border-stone-100 space-y-3">
+                            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Complementary</span>
+                            <div id="harmony-complementary" class="flex items-center gap-3 p-2 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                                <div class="w-12 h-12 rounded-xl shadow-inner bg-stone-200"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-jp font-bold text-stone-800">---</span>
+                                    <span class="text-[10px] font-mono text-stone-400">#000000</span>
+                                </div>
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-auto text-stone-300 group-hover:text-stone-900 transition-colors"></i>
+                            </div>
+                        </div>
+                        <!-- Harmony Card: Analogous -->
+                        <div class="p-4 rounded-3xl bg-stone-50 border border-stone-100 space-y-3">
+                            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Analogous Duo</span>
+                            <div class="flex flex-col gap-2">
+                                <div id="harmony-analogous-1" class="flex items-center gap-3 p-2 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                                    <div class="w-10 h-10 rounded-xl shadow-inner bg-stone-200"></div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[12px] font-jp font-bold text-stone-800">---</span>
+                                        <span class="text-[10px] font-mono text-stone-400">#000000</span>
+                                    </div>
+                                </div>
+                                <div id="harmony-analogous-2" class="flex items-center gap-3 p-2 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                                    <div class="w-10 h-10 rounded-xl shadow-inner bg-stone-200"></div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[12px] font-jp font-bold text-stone-800">---</span>
+                                        <span class="text-[10px] font-mono text-stone-400">#000000</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Harmony Card: Triadic -->
+                        <div class="p-4 rounded-3xl bg-stone-50 border border-stone-100 space-y-3">
+                            <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Triadic Set</span>
+                            <div class="flex flex-col gap-2">
+                                <div id="harmony-triadic-1" class="flex items-center gap-3 p-2 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                                    <div class="w-10 h-10 rounded-xl shadow-inner bg-stone-200"></div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[12px] font-jp font-bold text-stone-800">---</span>
+                                        <span class="text-[10px] font-mono text-stone-400">#000000</span>
+                                    </div>
+                                </div>
+                                <div id="harmony-triadic-2" class="flex items-center gap-3 p-2 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer group">
+                                    <div class="w-10 h-10 rounded-xl shadow-inner bg-stone-200"></div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[12px] font-jp font-bold text-stone-800">---</span>
+                                        <span class="text-[10px] font-mono text-stone-400">#000000</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-auto flex gap-4">
+                    <button id="detail-copy" class="flex-1 h-14 bg-stone-900 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-stone-800 transition-all active:scale-95 shadow-xl shadow-stone-200">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                        Copy HEX Code
+                    </button>
+                    <button id="detail-fav" class="h-14 px-6 bg-white border-2 border-stone-100 rounded-2xl font-bold flex items-center justify-center gap-3 hover:border-stone-200 transition-all active:scale-95 text-stone-400 hover:text-red-500">
+                        <i data-lucide="heart" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
